@@ -1,6 +1,36 @@
 <resources>
     <string name="app_name">Labo4</string>
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="note_icon">Note icon</string>
+
+    <string name="sort_action">SORT</string>
+    <string name="sort_by_creation_date">Creation date</string>
+    <string name="sort_by_eta">ETA</string>
+    <string name="action_generate">Generate</string>
+    <string name="action_delete_all">Delete all</string>
+    <string name="button_delete">Delete</string>
+    <string name="icon_note_description">Icon of a note type</string>
+    <string name="icon_schedule_description">Icon confirming a schedule</string>
+    <string name="notes_fragment_title">My notes</string>
+    <string name="empty_note">No note</string>
+    <string name="schedule_late">Late</string>
+    <plurals name="schedule_month">
+        <item quantity="one">%d month</item>
+        <item quantity="other">%d months</item>
+    </plurals>
+    <plurals name="schedule_week">
+        <item quantity="one">%d week</item>
+        <item quantity="other">%d weeks</item>
+    </plurals>
+    <plurals name="schedule_day">
+        <item quantity="one">%d day</item>
+        <item quantity="other">%d days</item>
+    </plurals>
+    <plurals name="schedule_hour">
+        <item quantity="one">%d hour</item>
+        <item quantity="other">%d hours</item>
+    </plurals>
+    <plurals name="schedule_minute">
+        <item quantity="one">%d minute</item>
+        <item quantity="other">%d minutes</item>
+    </plurals>
 </resources>
