@@ -36,15 +36,16 @@ class ViewModelNotes(private val repository: Repository) : ViewModel() {
         (this.sortOrder as MutableLiveData).value = sortOrder
     }
 
-    fun generateANote() {
-        repository.generateANote()
+    fun generateNote() {
+        repository.generateNote()
     }
 
-    fun deleteAllNote() {
-        repository.deleteAllNotes()
+    fun deleteNotes() {
+        repository.deleteNotes()
     }
 }
 
+@Suppress("UNCHECKED_CAST")
 class ViewModelNotesFactory(private val repository: Repository) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(ViewModelNotes::class.java)) {

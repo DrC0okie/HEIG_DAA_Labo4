@@ -2,11 +2,13 @@ package ch.heigvd.daa.labo4.repository
 
 import androidx.lifecycle.LiveData
 import androidx.room.Insert
+import androidx.room.Dao
 import androidx.room.Query
-import ch.heigvd.iict.daa.labo4.models.Note
-import ch.heigvd.iict.daa.labo4.models.NoteAndSchedule
-import ch.heigvd.iict.daa.labo4.models.Schedule
+import ch.heigvd.daa.labo4.models.Note
+import ch.heigvd.daa.labo4.models.NoteAndSchedule
+import ch.heigvd.daa.labo4.models.Schedule
 
+@Dao
 interface Dao {
     @Query("SELECT * FROM note")
     fun getAllNotes(): LiveData<List<NoteAndSchedule>>
@@ -16,6 +18,9 @@ interface Dao {
 
     @Query("SELECT COUNT(*) FROM note")
     fun getCountNotes(): LiveData<Int>
+
+    @Query("SELECT COUNT(*) FROM note")
+    fun getCountDirect() : Long
 
     @Insert
     fun insert(note: Note): Long

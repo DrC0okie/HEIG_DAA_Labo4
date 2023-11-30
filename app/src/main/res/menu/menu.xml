@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/filter_menu_action"
+        android:title="@string/sort_action"
+        android:icon="@drawable/sort"
+        app:showAsAction="ifRoom|withText" >
+        <menu>
+            <item
+                android:id="@+id/creation_date_filter"
+                android:title="@string/sort_by_creation_date" />
+            <item
+                android:id="@+id/eta_filter"
+                android:title="@string/sort_by_eta" />
+        </menu>
+    </item>
+    <item
+        android:id="@+id/menu_actions_generate"
+        android:title="@string/action_generate" />
+    <item
+        android:id="@+id/menu_actions_delete_all"
+        android:title="@string/action_delete_all" />
+</menu>
