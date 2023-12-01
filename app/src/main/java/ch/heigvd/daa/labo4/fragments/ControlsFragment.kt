@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
-import ch.heigvd.daa.labo4.MyApp
+import ch.heigvd.daa.labo4.App
 import ch.heigvd.daa.labo4.R
 import ch.heigvd.daa.labo4.viewmodels.ViewModelNotes
 import ch.heigvd.daa.labo4.viewmodels.ViewModelNotesFactory
@@ -16,7 +16,7 @@ import ch.heigvd.daa.labo4.viewmodels.ViewModelNotesFactory
 class ControlsFragment : Fragment() {
 
     private val viewModel: ViewModelNotes by activityViewModels {
-        ViewModelNotesFactory((requireActivity().application as MyApp).repository)
+        ViewModelNotesFactory((requireActivity().application as App).repository)
     }
 
     override fun onCreateView(

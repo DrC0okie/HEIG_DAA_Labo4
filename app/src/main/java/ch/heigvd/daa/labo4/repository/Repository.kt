@@ -6,7 +6,7 @@ import ch.heigvd.daa.labo4.models.NoteAndSchedule
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
 
-class Repository(private val dao: Dao, private val applicationScope: CoroutineScope) {
+class Repository(private val dao: NotesDao, private val applicationScope: CoroutineScope) {
     var allNotes: LiveData<List<NoteAndSchedule>> = dao.getAllNotes()
     val countNotes: LiveData<Int> = dao.getCountNotes()
 

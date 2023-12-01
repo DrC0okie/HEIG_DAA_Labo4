@@ -5,22 +5,21 @@ import androidx.room.*
 import androidx.sqlite.db.SupportSQLiteDatabase
 import ch.heigvd.daa.labo4.models.Note
 import ch.heigvd.daa.labo4.models.Schedule
-import ch.heigvd.daa.labo4.repository.Dao
+import ch.heigvd.daa.labo4.repository.NotesDao
 import kotlin.concurrent.thread
-
 
 @Database(entities = [Note::class, Schedule::class], version = 1, exportSchema = true)
 @TypeConverters(DateConverter::class)
-abstract class AppDatabase : RoomDatabase() {
-    abstract fun dao(): Dao
+abstract class NotesDatabase : RoomDatabase() {
+    abstract fun dao(): NotesDao
 
     companion object {
-        private var DB: AppDatabase? = null
-        fun getDatabase(context: Context): AppDatabase {
+        private var DB: NotesDatabase? = null
+        fun getDatabase(context: Context): NotesDatabase {
             return DB ?: synchronized(this) {
                 DB = Room.databaseBuilder(
                     context.applicationContext,
-                    AppDatabase::class.java, "mydatabase.db"
+                    NotesDatabase::class.java, "mydatabase.db"
                 ).fallbackToDestructiveMigration().addCallback(this.callback).build()
 
                 DB!!
@@ -31,8 +30,8 @@ abstract class AppDatabase : RoomDatabase() {
             override fun onCreate(db: SupportSQLiteDatabase) {
                 super.onCreate(db)
                 DB?.let { database ->
-                    val isEmpty = database.dao().getCountDirect() == 0L
-                    if (isEmpty) {
+//                    val isEmpty = database.dao().getCountDirect() == 0L
+//                    if (isEmpty) {
                         thread {
                             for (i in 0..10) {
                                 val note = Note.generateRandomNote()
@@ -45,7 +44,7 @@ abstract class AppDatabase : RoomDatabase() {
                                 }
                             }
                         }
-                    }
+                    //}
                 }
             }
         }

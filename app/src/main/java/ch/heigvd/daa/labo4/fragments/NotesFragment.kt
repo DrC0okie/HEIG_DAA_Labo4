@@ -7,17 +7,16 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.recyclerview.widget.LinearLayoutManager
-import ch.heigvd.daa.labo4.MyApp
+import ch.heigvd.daa.labo4.App
 import ch.heigvd.daa.labo4.adapters.NotesAdapter
 import ch.heigvd.daa.labo4.databinding.FragmentNotesBinding
-import ch.heigvd.daa.labo4.models.NoteAndSchedule
 import ch.heigvd.daa.labo4.viewmodels.ViewModelNotes
 import ch.heigvd.daa.labo4.viewmodels.ViewModelNotesFactory
 
 class NotesFragment : Fragment() {
 
     private val viewModel: ViewModelNotes by activityViewModels {
-        ViewModelNotesFactory((requireActivity().application as MyApp).repository)
+        ViewModelNotesFactory((requireActivity().application as App).repository)
     }
 
     private var _binding: FragmentNotesBinding? = null

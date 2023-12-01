@@ -14,7 +14,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
 
     private val viewModel: ViewModelNotes by viewModels {
-        ViewModelNotesFactory((application as MyApp).repository)
+        ViewModelNotesFactory((application as App).repository)
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
