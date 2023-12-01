@@ -30,9 +30,9 @@ abstract class NotesDatabase : RoomDatabase() {
             override fun onCreate(db: SupportSQLiteDatabase) {
                 super.onCreate(db)
                 DB?.let { database ->
-//                    val isEmpty = database.dao().getCountDirect() == 0L
-//                    if (isEmpty) {
-                        thread {
+                    thread {
+                        val isEmpty = database.dao().getCountDirect() == 0L
+                        if (isEmpty) {
                             for (i in 0..10) {
                                 val note = Note.generateRandomNote()
                                 val id = database.dao().insert(note)
@@ -44,7 +44,7 @@ abstract class NotesDatabase : RoomDatabase() {
                                 }
                             }
                         }
-                    //}
+                    }
                 }
             }
         }

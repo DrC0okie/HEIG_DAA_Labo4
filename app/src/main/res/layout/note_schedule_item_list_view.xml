@@ -49,7 +49,7 @@
         app:layout_constraintBottom_toTopOf="@id/text_view_schedule"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:src="@drawable/clock"
+        android:src="@drawable/clock"
         tools:tint="@color/red" />
 
     <TextView
