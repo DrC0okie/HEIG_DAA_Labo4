@@ -16,9 +16,15 @@ import ch.heigvd.daa.labo4.models.State
 import java.util.Calendar as Cal
 import java.util.concurrent.TimeUnit as Tu
 
+/**
+ * Adapter for a RecyclerView displaying a list of notes and their schedules.
+ *
+ * @property _items Initial list of notes and schedules.
+ */
 class NotesAdapter(_items: List<NoteAndSchedule> = listOf()) :
     RecyclerView.Adapter<NotesAdapter.ViewHolder>() {
 
+    // Holds the current list of items displayed by the adapter.
     var items = listOf<NoteAndSchedule>()
         set(value) {
             val diffCallback = NotesDiffCallback(items, value)
@@ -42,15 +48,25 @@ class NotesAdapter(_items: List<NoteAndSchedule> = listOf()) :
         private const val NOTE_SCHEDULE = 1
     }
 
+    /**
+     * ViewHolder for note items.
+     *
+     * @param view The view representing a single item.
+     */
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         private val iconNote = view.findViewById<IV>(R.id.image_view_icon)
         private val titleNote = view.findViewById<TV>(R.id.text_view_title)
         private val textNote = view.findViewById<TV>(R.id.text_view_text)
-
         private val iconSchedule = view.findViewById<IV>(R.id.image_view_clock)
         private val textSchedule = view.findViewById<TV>(R.id.text_view_schedule)
 
+        /**
+         * Binds a NoteAndSchedule object to the ViewHolder.
+         *
+         * @param noteAndSchedule The NoteAndSchedule object to bind to the ViewHolder.
+         */
         fun bind(noteAndSchedule: NoteAndSchedule) {
+            // Set note icon and tint based on note type and state.
             iconNote.setImageResource(
                 when (noteAndSchedule.note.type) {
                     Type.TODO -> R.drawable.todo
@@ -67,6 +83,8 @@ class NotesAdapter(_items: List<NoteAndSchedule> = listOf()) :
             titleNote.text = noteAndSchedule.note.title
             textNote.text = noteAndSchedule.note.text
 
+
+            // If a schedule exists, display schedule information.
             if (noteAndSchedule.schedule != null) {
                 val (dateText, isLate) = displayDateDifference(
                     itemView.context,
@@ -83,66 +101,75 @@ class NotesAdapter(_items: List<NoteAndSchedule> = listOf()) :
 
         private fun displayDateDifference(context: Context, dueDate: Cal): Pair<String, Boolean> {
             val today = Cal.getInstance()
-            val diff = dueDate.timeInMillis.minus(today.timeInMillis)
+            val diffMillis = dueDate.timeInMillis - today.timeInMillis
+            val isLate = diffMillis <= 0
 
-            if (diff <= 0) return Pair(context.getString(R.string.schedule_late), true)
+            if (isLate) return Pair(context.getString(R.string.schedule_late), true)
 
-            val diffMinutes = Tu.MINUTES.convert(diff, Tu.MILLISECONDS)
-            val diffHours = Tu.HOURS.convert(diff, Tu.MILLISECONDS)
-            val diffDays = Tu.DAYS.convert(diff, Tu.MILLISECONDS)
-            val diffWeeks = diffDays.div(today.getActualMaximum(Cal.DAY_OF_WEEK))
-            val diffMonths = diffDays.div(today.getActualMaximum(Cal.DAY_OF_MONTH))
+            // Calculate differences in various units
+            val diffMinutes = Tu.MINUTES.convert(diffMillis, Tu.MILLISECONDS)
+            val diffHours = Tu.HOURS.convert(diffMillis, Tu.MILLISECONDS)
+            val diffDays = Tu.DAYS.convert(diffMillis, Tu.MILLISECONDS)
 
-            when {
-                diffMonths > 0 ->
-                    return Pair(
-                        context.resources.getQuantityString(
+            val diffWeeks = diffDays / 7
+            val diffMonths = getMonthDifference(today, dueDate)
+
+            with(context.resources) {
+                return when {
+                    diffMonths > 0 -> Pair(
+                        getQuantityString(
                             R.plurals.schedule_month,
                             diffMonths.toInt(),
                             diffMonths
                         ), false
                     )
-                diffWeeks > 0 ->
-                    return Pair(
-                        context.resources.getQuantityString(
+
+                    diffWeeks > 0 -> Pair(
+                        getQuantityString(
                             R.plurals.schedule_week,
                             diffWeeks.toInt(),
                             diffWeeks
                         ), false
                     )
-                diffDays > 0 ->
-                    return Pair(
-                        context.resources.getQuantityString(
+
+                    diffDays > 0 -> Pair(
+                        getQuantityString(
                             R.plurals.schedule_day,
                             diffDays.toInt(),
                             diffDays
                         ), false
                     )
-                diffHours > 0 ->
-                    return Pair(
-                        context.resources.getQuantityString(
+
+                    diffHours > 0 -> Pair(
+                        getQuantityString(
                             R.plurals.schedule_hour,
                             diffHours.toInt(),
                             diffHours
                         ), false
                     )
-                diffMinutes > 0 ->
-                    return Pair(
-                        context.resources.getQuantityString(
+
+                    diffMinutes > 0 -> Pair(
+                        getQuantityString(
                             R.plurals.schedule_minute,
                             diffMinutes.toInt(),
                             diffMinutes
                         ), false
                     )
-                else -> return Pair(
-                    context.getString(R.string.schedule_late),
-                    true
-                )
+
+                    else -> Pair(context.getString(R.string.schedule_late), true)
+                }
             }
+        }
+
+        private fun getMonthDifference(startCal: Cal, endCal: Cal): Long {
+            val yearDiff = endCal.get(Cal.YEAR) - startCal.get(Cal.YEAR)
+            val monthDiff = endCal.get(Cal.MONTH) - startCal.get(Cal.MONTH)
+            return (yearDiff * 12 + monthDiff).toLong()
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
+        // Inflate the appropriate layout based on the item view type.
         return when (viewType) {
             NOTE -> ViewHolder(
                 LayoutInflater.from(parent.context)
@@ -160,7 +187,13 @@ class NotesAdapter(_items: List<NoteAndSchedule> = listOf()) :
     }
 }
 
-private class NotesDiffCallback(private val oldList: List<NoteAndSchedule>, private val newList: List<NoteAndSchedule>) :
+/**
+ * DiffUtil Callback for calculating the difference between two lists of NoteAndSchedule objects.
+ */
+private class NotesDiffCallback(
+    private val oldList: List<NoteAndSchedule>,
+    private val newList: List<NoteAndSchedule>
+) :
     DiffUtil.Callback() {
     override fun getOldListSize() = oldList.size
     override fun getNewListSize() = newList.size
