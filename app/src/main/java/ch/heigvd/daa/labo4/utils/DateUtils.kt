@@ -2,7 +2,9 @@ package ch.heigvd.daa.labo4.utils
 
 import android.content.Context
 import ch.heigvd.daa.labo4.R
+import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 
 object DateUtils {
@@ -72,5 +74,10 @@ object DateUtils {
         val yearDiff = endCal.get(Calendar.YEAR) - startCal.get(Calendar.YEAR)
         val monthDiff = endCal.get(Calendar.MONTH) - startCal.get(Calendar.MONTH)
         return (yearDiff * 12 + monthDiff).toLong()
+    }
+
+    fun formatDate(calendar: Calendar): String {
+        val formatter = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
+        return formatter.format(calendar.time)
     }
 }

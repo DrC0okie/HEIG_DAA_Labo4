@@ -13,6 +13,12 @@
     <string name="notes_fragment_title">My notes</string>
     <string name="empty_note">No note</string>
     <string name="schedule_late">Late</string>
+    <string name="edit">EDIT</string>
+    <string name="cancel">CANCEL</string>
+    <string name="title">Title</string>
+    <string name="note">Note</string>
+    <string name="na">N/A</string>
+    <string name="due_date">Due date</string>
     <plurals name="schedule_month">
         <item quantity="one">%d month</item>
         <item quantity="other">%d months</item>

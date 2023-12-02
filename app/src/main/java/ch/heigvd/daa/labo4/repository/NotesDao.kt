@@ -29,4 +29,7 @@ interface NotesDao {
 
     @Insert
     fun insert(schedule: Schedule): Long
+
+    @Query("UPDATE note SET title = :title, text = :text WHERE noteId = :noteId")
+    fun updateNote(noteId: Long, title: String, text: String)
 }

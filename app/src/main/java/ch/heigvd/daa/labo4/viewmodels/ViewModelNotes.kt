@@ -7,7 +7,9 @@ import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.map
 import androidx.lifecycle.switchMap
 import ch.heigvd.daa.labo4.Sort
+import ch.heigvd.daa.labo4.models.NoteAndSchedule
 import ch.heigvd.daa.labo4.repository.Repository
+import java.util.Calendar
 
 class ViewModelNotes(private val repository: Repository) : ViewModel() {
     private var allNotes = repository.allNotes
@@ -42,6 +44,19 @@ class ViewModelNotes(private val repository: Repository) : ViewModel() {
 
     fun deleteNotes() {
         repository.deleteNotes()
+    }
+
+    fun getNoteById(noteId: Long): LiveData<NoteAndSchedule?> {
+        return allNotes.switchMap { notes ->
+            val liveData = MutableLiveData<NoteAndSchedule?>()
+            val noteAndSchedule = notes.find { it.note.noteId == noteId }
+            liveData.value = noteAndSchedule
+            liveData
+        }
+    }
+
+    fun updateNoteAndSchedule(noteId: Long, title: String, text: String) {
+        repository.editNote(noteId, title, text)
     }
 }
 

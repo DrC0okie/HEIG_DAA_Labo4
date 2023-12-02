@@ -13,12 +13,12 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintEnd_toStartOf="@id/container_controls"
-        app:layout_constraintHorizontal_weight="3"
+        app:layout_constraintEnd_toStartOf="@id/fragment_container_controls"
+        app:layout_constraintHorizontal_weight="1"
         tools:layout="@layout/fragment_notes" />
 
     <androidx.fragment.app.FragmentContainerView
-        android:id="@+id/container_controls"
+        android:id="@+id/fragment_container_controls"
         android:name="ch.heigvd.daa.labo4.fragments.ControlsFragment"
         android:layout_width="0dp"
         android:layout_height="match_parent"

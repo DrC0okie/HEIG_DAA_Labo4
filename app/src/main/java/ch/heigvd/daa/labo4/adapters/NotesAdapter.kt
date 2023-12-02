@@ -9,10 +9,14 @@ import androidx.viewbinding.ViewBinding
 import ch.heigvd.daa.labo4.databinding.NoteItemListViewBinding as N_ViewBinding
 import ch.heigvd.daa.labo4.databinding.NoteScheduleItemListViewBinding as NS_ViewBinding
 import ch.heigvd.daa.labo4.models.NoteAndSchedule
+import ch.heigvd.daa.labo4.models.OnNoteClickListener
 import ch.heigvd.daa.labo4.utils.DateUtils
 import ch.heigvd.daa.labo4.utils.NoteUtils
 
-class NotesAdapter(listItems: List<NoteAndSchedule> = listOf()) :
+class NotesAdapter(
+    private val clickListener: OnNoteClickListener,
+    listItems: List<NoteAndSchedule> = listOf()
+) :
     RecyclerView.Adapter<NotesAdapter.ViewHolder>() {
 
     private val differ = AsyncListDiffer(this, NotesDiffCallback())
@@ -55,12 +59,18 @@ class NotesAdapter(listItems: List<NoteAndSchedule> = listOf()) :
 
     override fun getItemCount() = items.size
 
-    inner class ViewHolder(private val binding: ViewBinding) : RecyclerView.ViewHolder(binding.root) {
-        /**
-         * Binds a NoteAndSchedule object to the ViewHolder.
-         *
-         * @param noteAndSchedule The NoteAndSchedule object to bind to the ViewHolder.
-         */
+    inner class ViewHolder(private val binding: ViewBinding) :
+        RecyclerView.ViewHolder(binding.root) {
+
+        init {
+            itemView.setOnClickListener {
+                val position = adapterPosition
+                if (position != RecyclerView.NO_POSITION) {
+                    clickListener.onNoteClicked(items[position])
+                }
+            }
+        }
+
         fun bind(noteAndSchedule: NoteAndSchedule) {
             when (binding) {
                 is N_ViewBinding -> bindNote(binding, noteAndSchedule)
@@ -106,7 +116,10 @@ class NotesAdapter(listItems: List<NoteAndSchedule> = listOf()) :
             return oldItem.note.noteId == newItem.note.noteId
         }
 
-        override fun areContentsTheSame(oldItem: NoteAndSchedule, newItem: NoteAndSchedule): Boolean {
+        override fun areContentsTheSame(
+            oldItem: NoteAndSchedule,
+            newItem: NoteAndSchedule
+        ): Boolean {
             // Since Note and Schedule are data classes, a simple equality check is sufficient.
             // This will compare all properties of the Note and Schedule objects.
             return oldItem == newItem

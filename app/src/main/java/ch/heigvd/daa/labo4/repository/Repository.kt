@@ -5,6 +5,7 @@ import ch.heigvd.daa.labo4.models.Note
 import ch.heigvd.daa.labo4.models.NoteAndSchedule
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.launch
+import java.util.Calendar
 
 class Repository(private val dao: NotesDao, private val applicationScope: CoroutineScope) {
     var allNotes: LiveData<List<NoteAndSchedule>> = dao.getAllNotes()
@@ -26,6 +27,12 @@ class Repository(private val dao: NotesDao, private val applicationScope: Corout
                 schedule.ownerId = id
                 dao.insert(schedule)
             }
+        }
+    }
+
+    fun editNote(noteId: Long, title: String, text: String) {
+        applicationScope.launch {
+            dao.updateNote(noteId, title, text)
         }
     }
 }
