@@ -1,41 +1,44 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="@dimen/recycler_view_item_width"
-    android:layout_margin="@dimen/default_margin">
+    xmlns:tools="http://schemas.android.com/tools">
 
-    <ImageView
-        android:id="@+id/image_view_icon"
-        android:layout_width="@dimen/recycler_view_item_width"
-        android:layout_height="match_parent"
-        android:contentDescription="@string/icon_note_description"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:scaleType="centerCrop"
-        tools:src="@drawable/shopping"
-        tools:tint="@color/grey" />
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="@dimen/recycler_view_item_width"
+        android:layout_margin="@dimen/default_margin">
 
-    <TextView
-        android:id="@+id/text_view_title"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/default_margin"
-        android:textStyle="bold"
-        app:layout_constraintBottom_toTopOf="@id/text_view_text"
-        app:layout_constraintStart_toEndOf="@id/image_view_icon"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="Title" />
+        <ImageView
+            android:id="@+id/image_view_icon"
+            android:layout_width="@dimen/recycler_view_item_width"
+            android:layout_height="match_parent"
+            android:contentDescription="@string/icon_note_description"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:scaleType="centerCrop"
+            tools:src="@drawable/shopping"
+            tools:tint="@color/grey" />
 
-    <TextView
-        android:id="@+id/text_view_text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintStart_toStartOf="@id/text_view_title"
-        app:layout_constraintTop_toBottomOf="@id/text_view_title"
-        tools:text="Description text" />
+        <TextView
+            android:id="@+id/text_view_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="@dimen/default_margin"
+            android:textStyle="bold"
+            app:layout_constraintBottom_toTopOf="@id/text_view_text"
+            app:layout_constraintStart_toEndOf="@id/image_view_icon"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="Title" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+        <TextView
+            android:id="@+id/text_view_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="@id/text_view_title"
+            app:layout_constraintTop_toBottomOf="@id/text_view_title"
+            tools:text="Description text" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</layout>

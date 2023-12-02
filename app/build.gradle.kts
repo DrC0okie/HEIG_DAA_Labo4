@@ -18,8 +18,9 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
-    viewBinding {
-        enable = true
+    buildFeatures {
+        viewBinding = true
+        dataBinding = true
     }
 
     ksp {

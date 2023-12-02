@@ -10,7 +10,7 @@ import ch.heigvd.daa.labo4.Sort
 import ch.heigvd.daa.labo4.repository.Repository
 
 class ViewModelNotes(private val repository: Repository) : ViewModel() {
-    var allNotes = repository.allNotes
+    private var allNotes = repository.allNotes
 
     val countNotes = repository.countNotes
 
@@ -45,7 +45,6 @@ class ViewModelNotes(private val repository: Repository) : ViewModel() {
     }
 }
 
-@Suppress("UNCHECKED_CAST")
 class ViewModelNotesFactory(private val repository: Repository) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(ViewModelNotes::class.java)) {
