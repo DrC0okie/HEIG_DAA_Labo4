@@ -7,7 +7,19 @@ import java.util.Calendar
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 
+/**
+ * Utility object for handling date-related operations.
+ * @author Timothée Van Hove, Léo Zmoos
+ */
 object DateUtils {
+
+    /**
+     * Calculates the difference between the current date and a due date.
+     *
+     * @param context The application context for accessing resources.
+     * @param dueDate The due date to compare with the current date.
+     * @return A Pair of formatted string representing the time difference and a boolean indicating if it is late.
+     */
     fun getDateDiff(context: Context, dueDate: Calendar): Pair<String, Boolean> {
         val today = Calendar.getInstance()
         val diffMillis = dueDate.timeInMillis - today.timeInMillis
@@ -23,6 +35,7 @@ object DateUtils {
         val diffWeeks = diffDays / 7
         val diffMonths = getMonthDifference(today, dueDate)
 
+        // Return the formatted string based on the largest time unit difference
         with(context.resources) {
             return when {
                 diffMonths > 0 -> Pair(
@@ -70,12 +83,25 @@ object DateUtils {
         }
     }
 
+    /**
+     * Calculates the difference in months between two Calendar dates.
+     *
+     * @param startCal The start date.
+     * @param endCal The end date.
+     * @return The difference in months as a Long.
+     */
     private fun getMonthDifference(startCal: Calendar, endCal: Calendar): Long {
         val yearDiff = endCal.get(Calendar.YEAR) - startCal.get(Calendar.YEAR)
         val monthDiff = endCal.get(Calendar.MONTH) - startCal.get(Calendar.MONTH)
         return (yearDiff * 12 + monthDiff).toLong()
     }
 
+    /**
+     * Formats a Calendar date into a readable string format.
+     *
+     * @param calendar The Calendar object to format.
+     * @return A string representing the formatted date.
+     */
     fun formatDate(calendar: Calendar): String {
         val formatter = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
         return formatter.format(calendar.time)
