@@ -16,7 +16,38 @@ Ce laboratoire consiste au développement d’une application Android basée sur
 
 ### ViewBinding
 
-### Adapter
+Nous avons utilisé le viewBinding dans tous les fragments et activités, ainsi que dans l'adapter pour améliorer la clarté et la sécurité du type en nous fournissant un moyen direct d'interagir avec les vues de l'interface utilisateur. 
+
+L'accès aux vues du layout. L'utilisation du ViewBinding dans l'adapter nécessite quelques arrangements:
+
+* Nous devons wrapper le contenu de layout dans une balise <layout> pour la liaison des données.
+* Nous devons utiliser `ViewBinding` comme type de base pour le `ViewHolder`. Cela permet de gérer différents types de vues (Note et NoteSchedule). Nous pouvons alors attribuer le type approprié dans la méthode bind pour définir les données en conséquence.
+
+De plus, l'utilisation de ViewBinding est légèrement différente dans un fragment comparé à son utilisation dans une activité:
+
+- Dans une activité, le binding est créé et nettoyé dans les méthodes `onCreate` et `onDestroy`. Le ViewBinding dans une activité est relativement directe car le cycle de vie de l'activité est simple et clair.
+- Dans un fragment, le binding est créé dans `onCreateView` et nettoyé dans `onDestroyView`. Cette distinction est importante car la vue du fragment peut être créée et détruite plusieurs fois au cours du cycle de vie du fragment lui-même. Il est donc crucial de nettoyer le binding dans `onDestroyView` pour éviter les fuites de mémoire, car les références conservées dans le binding peuvent prolonger inutilement la durée de vie des vues du layout.
+
+### AsyncListDiffer & NotesDiffCallback
+
+Pour gérer les mises à jour de données dans notre adaptateur de manière performante, nous avons choisi d'utiliser `AsyncListDiffer` accompagné de `NotesDiffCallback`. L'`AsyncListDiffer` est un outil qui optimise les mises à jour de la liste en calculant les différences entre les anciennes et les nouvelles listes de données de manière asynchrone, sur un thread en arrière-plan. Cela permet de ne pas bloquer le thread principal de l'interface utilisateur lors des mises à jour, garantissant ainsi une expérience utilisateur fluide, même avec de grandes quantités de données ou des modifications fréquentes. Le `NotesDiffCallback`, est une implémentation de `DiffUtil.ItemCallback` spécifique à nos objets `NoteAndSchedule`. Il définit comment déterminer si deux objets sont identiques (`areItemsTheSame`) et si leur contenu est identique (`areContentsTheSame`). 
+
+Cette approche est plus optimisée par rapport à l'utilisation directe de `DiffUtil.Callback`, et présente les avantages suivants:
+
+1.  `AsyncListDiffer`, en utilisant `DiffUtil.ItemCallback`, permet de calculer les différences entre les listes de manière asynchrone. Donc le traitement de comparaison des éléments est effectué en arrière-plan, évitant de bloquer le thread principal, particulièrement pour des listes volumineuses ou des mises à jour fréquentes.
+2. Contrairement à une mise à jour manuelle de l'ensemble des éléments, `AsyncListDiffer` ne met à jour que les éléments qui ont été effectivement modifiés, ajoutés ou supprimés. Cela entraîne une performance accrue et des animations plus fluides lors des changements dans la liste.
+
+### Absence de Layout Spécifique pour Tablettes
+
+Nous n'avons pas implémenté de layout spécifique pour les tablettes. La principale raison est que nous avons choisi de ne pas télécharger un virtual device pour tablette afin d'économiser de l'espace disque.
+
+Même si nous n'avons pas concrètement implémenté un layout pour tablette, nous sommes conscients des étapes nécessaires pour le faire. Voici une brève explication :
+
+1. **Création de Dossiers de Ressources Spécifiques** : Pour supporter les tablettes, il faut créer des dossiers de ressources supplémentaires dans le projet, tels que `layout-sw600dp` pour les petits écrans de tablette et `layout-sw720dp` pour les plus grands. Ces dossiers contiendraient des versions adaptées des fichiers XML de layout, optimisées pour l'utilisation sur des écrans plus grands.
+2. **Conception Réactive** : La conception de ces layouts nécessiterait une approche réactive, en utilisant un `ConstraintLayout`, comme nous l'avons fait pour les fragments de l'app mobile.
+3. **Fragments et Navigation** : Nous aurions du changer légèrement le code dans le `EditFragment` pour supporter le mode tablette, car l'affichage du `ControlFrgment` et du EditFragment seraient permanents, même en cas de rotation de l'écran.
+
+
 
 ## Questions
 
@@ -26,9 +57,9 @@ Ce laboratoire consiste au développement d’une application Android basée sur
 Quelle est la meilleure approche pour sauver, même après la fermeture de l’app, le choix de l’option de tri de la liste des notes ? Vous justifierez votre réponse et l’illustrez en présentant le code mettant en œuvre votre approche.
 ```
 
-La manière dont nous avons implémenté cette feature est l'utilisation de SharedPreferences pour sauver l'état du tri. Les préférences partagées permettent de stocker des données primitives privées dans des paires clé-valeur, ce qui est idéal pour enregistrer des paramètres ou des préférences simples.
+La manière dont nous avons implémenté cette feature est l'utilisation de `SharedPreferences` pour sauver l'état du tri. Ces dernières permettent de stocker des données primitives dans des paires clé-valeur, ce qui est idéal pour enregistrer des paramètres ou des préférences simples. Pour l'implémenter:
 
-#### Modifier le ViewModelFactory
+#### 1. Modifier le ViewModelFactory
 
 Il faut modifier le ViewModelFactory, pour pouvoir lui passer le contexte en paramètres:
 
@@ -45,7 +76,7 @@ class ViewModelNotesFactory(private val repository: Repository, private val cont
 
 
 
-#### Modifier la création du VM dans le fragment pour lui passer le contexte de l'app
+#### 2. Modifier la création du VM dans le fragment pour lui passer le contexte de l'app
 
 ```Kotlin
 private val viewModel: ViewModelNotes by activityViewModels {
@@ -55,7 +86,7 @@ private val viewModel: ViewModelNotes by activityViewModels {
 
 
 
-#### Modifier la création du VM dans l'activité pour lui passer le contexte de l'app
+#### 3. Modifier la création du VM dans l'activité pour lui passer le contexte de l'app
 
 ```Kotlin
 private val viewModel: ViewModelNotes by viewModels {
@@ -65,7 +96,7 @@ private val viewModel: ViewModelNotes by viewModels {
 
 
 
-#### Modifier le VM pour accepter le contexte de l'app en paramètres
+#### 4. Modifier le VM pour accepter le contexte de l'app en paramètres
 
 ```Kotlin
 class ViewModelNotes(private val repository: Repository, context: Context) : ViewModel() {
@@ -74,9 +105,9 @@ class ViewModelNotes(private val repository: Repository, context: Context) : Vie
 
 
 
-#### Enregistrer l'option de tri dans les préférences partagées
+#### 5. Enregistrer l'option de tri dans les SharedPreferences
 
-Maintenant que nous avons accès au contexte, nous pouvons récupérer les `SharedPreferences` dans le VM. Chaque fois que l'option de tri change dans le `ViewModel`, il faut enregistrer ce changement dans les préférences partagées :
+Maintenant que nous avons accès au contexte, nous pouvons récupérer les `SharedPreferences` dans le VM. Chaque fois que l'option de tri change dans le `ViewModel`, il faut enregistrer ce changement:
 
 ```kotlin
 class ViewModelNotes(private val repository: Repository, context: Context) : ViewModel() {
@@ -149,13 +180,13 @@ Les notes affichées dans la RecyclerView ne sont pas sélectionnables ni cliqua
 
 Nous avons implémenté cette feature dans notre application. Pour implémenter in `clickListener` sur les items de la recyclerView, nous avons suivi les étapes suivantes:
 
-#### Créer le layout du nouveau fragment d'édition
+#### 1. Créer le layout du nouveau fragment d'édition
 
 Créer un simple layout permettant d'éditer les données d'un objet `NoteAndSchedule`. Ne pas oublier de l'implémenter dans une `ScrollView`, car ce layout pourrait être trop haut pour l'édition en mode paysage.
 
 ![](figures/Screenshot_20231204_081722.png)
 
-#### Créer une interface clickListener
+#### 2. Créer une interface clickListener
 
 Créer une interface pour gérer les événements de clics sur les éléments. Cette interface sera mise en œuvre par le fragment qui héberge la RecyclerView.
 
@@ -167,7 +198,7 @@ interface OnNoteClickListener {
 
 
 
-#### Passer l'interface à l'adaptateur et invoquer le listener lors du clic
+#### 3. Passer l'interface à l'adaptateur et invoquer le listener lors du clic
 
 Modifier le NotesAdapter pour qu'il prenne ce listener en paramètre et qu'il l'affecte à chaque élément de la `RecyclerView`. Dans le ViewHolder, définir un `OnClickListener` pour la vue de l'élément. Dans ce listener, invoquer la méthode de l'interface, en transmettant les données pertinentes (par exemple, l'id de l'objet NoteAndSchedule).
 
@@ -178,7 +209,7 @@ class NotesAdapter(
 ) :
     RecyclerView.Adapter<NotesAdapter.ViewHolder>() {
         
-    (...)
+//(...)
         
     inner class ViewHolder(private val binding: ViewBinding) : RecyclerView.ViewHolder(binding.root) {
     init {
@@ -189,13 +220,13 @@ class NotesAdapter(
             }
         }
     }
-    (...)       
+//(...)       
 }
 ```
 
 
 
-#### Implémenter l'interface dans le fragment hote
+#### 4. Implémenter l'interface dans le fragment hote
 
 Dans le fragment qui héberge le `RecyclerView`, implémenter l'interface `OnNoteClickListener`. Dans l'implémentation, implémenter la navigation vers le nouveau fragment. Attention, il faut bien gérer l'orientation actuelle de l'écran et passer le bon fragment à remplacer. En mode paysage, remplacer le fragment qui afficher les contrôles et en mode portait, il faut remplacer le fragment principal.
 
@@ -232,7 +263,7 @@ class NotesFragment : Fragment(), OnNoteClickListener {
 
 
 
-#### Gérer les données dans le nouveau fragment
+#### 5. Gérer les données dans le nouveau fragment
 
 Dans le nouveau fragment, récupérer  l'objet NoteAndSchedule et l'utiliser pour remplir les champs d'édition. Ici (comme dans les autres fragments/activités), nous avons utilisé le viewBinding pour ne pas devoir récupérer les vues avec `findViewById`.
 
@@ -240,19 +271,8 @@ Le fragment va récupérer l'id de l'objet `NoteAndSchedule`, puis va appeler la
 
 ```kotlin
 class EditNoteFragment : Fragment() {
-    private var _binding: FragmentNoteEditBinding? = null
-    private val binding get() = _binding!!
 
-    private val viewModel: ViewModelNotes by activityViewModels {
-        ViewModelNotesFactory((requireActivity().application as App).repository)
-    }
-
-    override fun onCreateView(
-        inflater: LayoutInflater, container: ViewGroup?, savedInstanceState: Bundle?
-    ): View {
-        _binding = FragmentNoteEditBinding.inflate(inflater, container, false)
-        return binding.root
-    }
+//(...)
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
@@ -296,16 +316,13 @@ class EditNoteFragment : Fragment() {
         binding.buttonCancel.setOnClickListener { activity?.supportFragmentManager?.popBackStack() }
     }
 
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
-    }
+//(...)
 }
 ```
 
 
 
-#### Ajouter les méthodes `getNoteById` et `updateNoteAndSchedule` dans le ViewModel
+#### 6. Ajouter les méthodes `getNoteById` et `updateNoteAndSchedule` dans le ViewModel
 
 Dans le viewModel, ajouter la méthode `getNoteById`, permettant de récupérer une LiveData de NoteAndSchedule pour l'afficher dans le layout. Ensuite, ajouter la méthode `updateNoteAndSchedule` pour modifier le contenu d'une note dans le base de données.
 
@@ -350,3 +367,7 @@ Maintenant, nous pouvons clicker sur une note, l'afficher dans un nouveau fragme
 
 
 ## Conclusion
+
+Ce laboratoire a été une occasion d'approfondir nos connaissances dans l'utilisation de l'architecture MVVM et la base de données Room. En naviguant à travers les défis de l'implémentation, nous avons non seulement renforcé notre compréhension des bonnes pratiques, mais aussi appris à adapter notre application à différentes configurations d'écran. Nous avons mis l'accent sur la propreté du code, anisi que la création de features supplémentaires, comme l'édition des éléments de la liste et la sauvegarde de l'état du tri.
+
+Ce projet a été un excellent exercice pour combiner diverses technologies vues en cours. Les leçons apprises ici seront sans aucun doute un atout dans nos futurs projets de développement.
