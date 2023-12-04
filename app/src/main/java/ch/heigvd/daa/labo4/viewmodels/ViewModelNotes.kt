@@ -1,5 +1,6 @@
 package ch.heigvd.daa.labo4.viewmodels
 
+import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -9,14 +10,19 @@ import androidx.lifecycle.switchMap
 import ch.heigvd.daa.labo4.Sort
 import ch.heigvd.daa.labo4.models.NoteAndSchedule
 import ch.heigvd.daa.labo4.repository.Repository
-import java.util.Calendar
 
-class ViewModelNotes(private val repository: Repository) : ViewModel() {
+class ViewModelNotes(private val repository: Repository, context: Context) : ViewModel() {
+    private val sharedPreferences = context.getSharedPreferences("NotePreferences", Context.MODE_PRIVATE)
+
+    private val _sortOrder = MutableLiveData<Sort>().apply {
+        value = Sort.values()[sharedPreferences.getInt("sortOrder", Sort.NONE.ordinal)]
+    }
+
+    private val sortOrder: LiveData<Sort> = _sortOrder
+
     private var allNotes = repository.allNotes
 
     val countNotes = repository.countNotes
-
-    private val sortOrder: LiveData<Sort> = MutableLiveData(Sort.NONE)
 
     private val sortedNotesByDate = allNotes.map { notes ->
         notes.sortedByDescending { note -> note.note.creationDate }
@@ -35,7 +41,11 @@ class ViewModelNotes(private val repository: Repository) : ViewModel() {
     }
 
     fun setSortOrder(sortOrder: Sort) {
-        (this.sortOrder as MutableLiveData).value = sortOrder
+        _sortOrder.value = sortOrder
+        with(sharedPreferences.edit()) {
+            putInt("sortOrder", sortOrder.ordinal)
+            apply()
+        }
     }
 
     fun generateNote() {
@@ -60,10 +70,10 @@ class ViewModelNotes(private val repository: Repository) : ViewModel() {
     }
 }
 
-class ViewModelNotesFactory(private val repository: Repository) : ViewModelProvider.Factory {
+class ViewModelNotesFactory(private val repository: Repository, private val context: Context) : ViewModelProvider.Factory {
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
         if (modelClass.isAssignableFrom(ViewModelNotes::class.java)) {
-            return ViewModelNotes(repository) as T
+            return ViewModelNotes(repository, context) as T
         }
         throw IllegalArgumentException("Unknown ViewModel class")
     }

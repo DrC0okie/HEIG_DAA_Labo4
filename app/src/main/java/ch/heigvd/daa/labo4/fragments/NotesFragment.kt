@@ -20,7 +20,7 @@ import ch.heigvd.daa.labo4.viewmodels.ViewModelNotesFactory
 class NotesFragment : Fragment(), OnNoteClickListener {
 
     private val viewModel: ViewModelNotes by activityViewModels {
-        ViewModelNotesFactory((requireActivity().application as App).repository)
+        ViewModelNotesFactory((requireActivity().application as App).repository, requireActivity().application)
     }
 
     private var _binding: FragmentNotesBinding? = null

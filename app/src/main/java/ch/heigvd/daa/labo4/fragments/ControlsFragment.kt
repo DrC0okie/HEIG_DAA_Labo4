@@ -12,11 +12,10 @@ import ch.heigvd.daa.labo4.R
 import ch.heigvd.daa.labo4.viewmodels.ViewModelNotes
 import ch.heigvd.daa.labo4.viewmodels.ViewModelNotesFactory
 
-
 class ControlsFragment : Fragment() {
 
     private val viewModel: ViewModelNotes by activityViewModels {
-        ViewModelNotesFactory((requireActivity().application as App).repository)
+        ViewModelNotesFactory((requireActivity().application as App).repository, requireActivity().application)
     }
 
     override fun onCreateView(

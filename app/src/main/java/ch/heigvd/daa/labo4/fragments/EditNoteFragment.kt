@@ -19,7 +19,7 @@ class EditNoteFragment : Fragment() {
     private val binding get() = _binding!!
 
     private val viewModel: ViewModelNotes by activityViewModels {
-        ViewModelNotesFactory((requireActivity().application as App).repository)
+        ViewModelNotesFactory((requireActivity().application as App).repository, requireActivity().application)
     }
 
     override fun onCreateView(
